@@ -8,7 +8,7 @@
 
 import Foundation
 
-//enum for storing and showing data in collection View
+//enum for storing and showing data in collection View.
 enum OperatorValue: String, CaseIterable {
     case cancelOperator
     case plusMinusOperator
