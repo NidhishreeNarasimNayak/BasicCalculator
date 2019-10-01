@@ -70,20 +70,6 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                     calculationLabel.text = appendSecondNumber
                 }
             }
-//            else if storeCheckValue == Values.plusMinus {
-//                if let number = cell?.valueLabel.text {
-//                    let numberConvertedInt = Int(number)
-//                    if var convertedNumber = numberConvertedInt {
-//                        convertedNumber = 0 + convertedNumber
-//                        let convertedToString = String(convertedNumber)
-//                        calculationLabel.text = convertedToString
-//                    }
-//
-//                }
-//
-//
-//            }
-            
         }  else if storeCheckValue == Values.operators {
             var secondStringStored: String = ""
             var convertedDoubleToString: String = ""
