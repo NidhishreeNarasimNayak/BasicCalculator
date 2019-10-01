@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OnBoardingVC: UIViewController {
+class OnBoardingVC: BaseVC {
     var nameStack = Stack()
     var emptyString: String = ""
     
@@ -71,32 +71,14 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 }
             }
         }  else if storeCheckValue == Values.operators {
-            var secondStringStored: String = ""
-            var convertedDoubleToString: String = ""
             if nameStack.count() == 1 {
                 nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
             } else if Values.checkValue(value: topElement) == Values.number {
-                for _ in 0..<nameStack.count() {
-                    secondStringStored = nameStack.pop() + secondStringStored
-                }
-                let expression: NSExpression = NSExpression(format: secondStringStored)
-                guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return }
-                convertedDoubleToString = String(result)
-                nameStack.push(convertedDoubleToString)
+                calculationLabel.text = calculateResult(stackValues: nameStack)
                 nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
-                calculationLabel.text = convertedDoubleToString
-            }
+                }
         } else if storeCheckValue == Values.equalTo {
-            var expresssionStored: String = ""
-            var convertedDoubleToString: String = ""
-            for _ in 0..<nameStack.count() {
-                expresssionStored = nameStack.pop() + expresssionStored
-            }
-            let expression: NSExpression = NSExpression(format: expresssionStored)
-            guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return }
-            convertedDoubleToString = String(result)
-            nameStack.push(convertedDoubleToString)
-            calculationLabel.text = convertedDoubleToString
+            calculationLabel.text = calculateResult(stackValues: nameStack)
        }
             else if storeCheckValue == Values.plusMinus {
             if Values.checkValue(value: topElement) == Values.number {

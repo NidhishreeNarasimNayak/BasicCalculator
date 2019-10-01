@@ -75,7 +75,7 @@ enum OperatorValue: String, CaseIterable {
 }
 
 struct Stack {
-    private  var items: [String] = []  // to hold stack values
+    private var items: [String] = []  // to hold stack values
     
     //peek at the top most element of stack, just return the top most item
     func peek() -> String {
