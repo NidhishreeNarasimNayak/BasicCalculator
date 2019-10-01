@@ -36,7 +36,6 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
         }
         return onBoardingCell ?? UICollectionViewCell()
     }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
         let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
@@ -62,11 +61,9 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                     let appendNumber = popedNumber + storeNumber
                     nameStack.push(appendNumber)
                     calculationLabel.text = appendNumber
-                    print(calculationLabel.text)
                 }
             }
             else if Values.checkValue(value: topElement) == Values.operators {
-                //   var secondStringStored: String = ""
                 var appendSecondNumber: String = ""
                 if let storeSecondNumber = cell?.valueLabel.text {
                     appendSecondNumber =  appendSecondNumber + storeSecondNumber
@@ -74,9 +71,38 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                     calculationLabel.text = appendSecondNumber
                 }
             }
+            else if storeCheckValue == Values.plusMinus {
+                if let number = cell?.valueLabel.text {
+                    let numberConvertedInt = Int(number)
+                    if var convertedNumber = numberConvertedInt {
+                        convertedNumber = 0 + convertedNumber
+                        let convertedToString = String(convertedNumber)
+                        calculationLabel.text = convertedToString
+                    }
+                    
+                }
+                
+                
+            }
             
         }  else if storeCheckValue == Values.operators {
-            nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
+            let topElement = nameStack.peek()
+            var secondStringStored: String = ""
+            var convertedDoubleToString: String = ""
+            if nameStack.count() == 1 {
+                nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
+            } else if Values.checkValue(value: topElement) == Values.number {
+                for _ in 0..<nameStack.count() {
+                    secondStringStored = nameStack.pop() + secondStringStored
+                }
+                let expression: NSExpression = NSExpression(format: secondStringStored)
+                guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return }
+                convertedDoubleToString = String(result)
+                nameStack.push(convertedDoubleToString)
+                nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
+                calculationLabel.text = convertedDoubleToString
+            }
+            //nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
         } else if storeCheckValue == Values.equalTo {
             var expresssionStored: String = ""
             var convertedDoubleToString: String = ""
@@ -84,11 +110,9 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 expresssionStored = nameStack.pop() + expresssionStored
             }
             let expression: NSExpression = NSExpression(format: expresssionStored)
-            let result: Double? = expression.expressionValue(with: nil, context: nil) as? Double
-            if let result = result {
-                convertedDoubleToString = String(result)
-                nameStack.push(convertedDoubleToString)
-            }
+            guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return }
+            convertedDoubleToString = String(result)
+            nameStack.push(convertedDoubleToString)
             calculationLabel.text = convertedDoubleToString
         }
     }
@@ -104,5 +128,4 @@ extension OnBoardingVC: UICollectionViewDelegateFlowLayout {
         return CGSize(width:  view.frame.width/4, height:  view.frame.width/4)
     }
 }
-//rghrth
-//changes
+

@@ -8,7 +8,7 @@
 
 import Foundation
 
-//enum for storing and showing data in collection View.
+//enum for storing and showing data in collection View..
 enum OperatorValue: String, CaseIterable {
     case cancelOperator
     case plusMinusOperator
@@ -101,6 +101,7 @@ enum Values: Int {
     case operators
     case cancel
     case equalTo
+    case plusMinus
     static func checkValue(value: String) -> Values {
         switch value {
         case "C":
@@ -111,6 +112,8 @@ enum Values: Int {
             return operators
         case "=":
             return equalTo
+        case "+/-":
+            return plusMinus
         default:
             print("invalid operator")
         }
