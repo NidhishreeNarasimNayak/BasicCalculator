@@ -39,6 +39,7 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
         let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
+        let topElement = nameStack.peek()
         
         if storeCheckValue == Values.cancel {
             nameStack.popAllElements()
@@ -51,8 +52,6 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 return
             }
             calculationLabel.text = cell?.valueLabel.text
-            let topElement = nameStack.peek()
-            
             if Values.checkValue(value: topElement) == Values.number {
                 let popedNumber = nameStack.pop()
                 
@@ -62,7 +61,7 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                     nameStack.push(appendNumber)
                     calculationLabel.text = appendNumber
                 }
-            }
+            }   //when the user wants to enter more than one digit for second number
             else if Values.checkValue(value: topElement) == Values.operators {
                 var appendSecondNumber: String = ""
                 if let storeSecondNumber = cell?.valueLabel.text {
@@ -71,22 +70,21 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                     calculationLabel.text = appendSecondNumber
                 }
             }
-            else if storeCheckValue == Values.plusMinus {
-                if let number = cell?.valueLabel.text {
-                    let numberConvertedInt = Int(number)
-                    if var convertedNumber = numberConvertedInt {
-                        convertedNumber = 0 + convertedNumber
-                        let convertedToString = String(convertedNumber)
-                        calculationLabel.text = convertedToString
-                    }
-                    
-                }
-                
-                
-            }
+//            else if storeCheckValue == Values.plusMinus {
+//                if let number = cell?.valueLabel.text {
+//                    let numberConvertedInt = Int(number)
+//                    if var convertedNumber = numberConvertedInt {
+//                        convertedNumber = 0 + convertedNumber
+//                        let convertedToString = String(convertedNumber)
+//                        calculationLabel.text = convertedToString
+//                    }
+//
+//                }
+//
+//
+//            }
             
         }  else if storeCheckValue == Values.operators {
-            let topElement = nameStack.peek()
             var secondStringStored: String = ""
             var convertedDoubleToString: String = ""
             if nameStack.count() == 1 {
@@ -102,7 +100,6 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
                 calculationLabel.text = convertedDoubleToString
             }
-            //nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
         } else if storeCheckValue == Values.equalTo {
             var expresssionStored: String = ""
             var convertedDoubleToString: String = ""
@@ -114,6 +111,17 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             convertedDoubleToString = String(result)
             nameStack.push(convertedDoubleToString)
             calculationLabel.text = convertedDoubleToString
+       }
+            else if storeCheckValue == Values.plusMinus {
+            if Values.checkValue(value: topElement) == Values.number {
+                let number = Int(nameStack.pop())
+                if let number = number {
+                    let integerNumberSignChange = 0 - number
+                  let stringNumberSignChange = String(integerNumberSignChange)
+                    nameStack.push(stringNumberSignChange)
+                    calculationLabel.text = stringNumberSignChange
+                }
+            }
         }
     }
 }
