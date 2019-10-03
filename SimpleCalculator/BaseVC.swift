@@ -15,8 +15,7 @@ class BaseVC: UIViewController {
 }
 /// extension which calculates the result of the expression
 extension BaseVC {
-    func calculateResult(stackValues: Stack) -> String {
-        var stackValues = stackValues as Stack
+    func calculateResult(stackValues: inout Stack) -> String {
         var stringStored: String = ""
         var convertedDoubleToString: String = ""
         for _ in 0..<stackValues.count() {
@@ -28,4 +27,12 @@ extension BaseVC {
         stackValues.push(convertedDoubleToString)
         return convertedDoubleToString
     }
+    
+//    func appendNumber(stackValues: inout Stack) {
+//        if let  storeNumber  = cell?.valueLabel.text ?? "" {
+//            var popedNumber = stackValues.pop()
+//            var appendNumber = (popedNumber ?? "") + storeNumber
+//            stackValues.push(appendNumber)
+//        }
+//}
 }
