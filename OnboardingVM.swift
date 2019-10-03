@@ -82,7 +82,7 @@ struct Stack {
         guard let topElement = items.first else { return "The stack is empty"}
         return topElement
     }
-    mutating func pop() -> String {
+    mutating func pop() -> String? {
         return items.removeFirst()
     }
     mutating func push(_ element: String) {

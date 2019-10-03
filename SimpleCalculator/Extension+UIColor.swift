@@ -13,4 +13,7 @@ extension UIColor {
     class func getyellowOrange() -> UIColor {
         return UIColor(displayP3Red: 240/256, green: 142/256, blue: 39/256, alpha: 1.0)
     }
+    class func getTinColor() -> UIColor {
+        return UIColor(displayP3Red: 145/256, green: 145/256, blue: 145/256, alpha: 1.0)
+    }
 }
