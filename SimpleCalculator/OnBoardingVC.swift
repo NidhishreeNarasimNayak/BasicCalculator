@@ -39,7 +39,7 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
-      
+        
         let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
         let topElement = nameStack.peek()
         
@@ -47,18 +47,24 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             nameStack.popAllElements()
             calculationLabel.text = "0"
         } else if storeCheckValue == Values.number {
+            //             if Values.checkValue(value: topElement) == Values.decimalPoint {
+            //                if cell?.valueLabel.text == "." {
+            //                    return
+            //                }
+            //            }
             //stack doesnt have a value
             if nameStack.count() == 0 {
                 nameStack.push(cell?.valueLabel.text ?? "")
                 calculationLabel.text = cell?.valueLabel.text
                 return
             }
-            calculationLabel.text = cell?.valueLabel.text
+            //calculationLabel.text = cell?.valueLabel.text
             if Values.checkValue(value: topElement) == Values.number {
-                let popedNumber = nameStack.pop()
+                //let popedNumber = nameStack.pop()
                 
                 //when user enters a two digit number
                 if let storeNumber  = cell?.valueLabel.text {
+                    let popedNumber = nameStack.pop()
                     let appendNumber = (popedNumber ?? "") + storeNumber
                     nameStack.push(appendNumber)
                     calculationLabel.text = appendNumber
@@ -86,17 +92,28 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             if nameStack.count() == 0 {
                 calculationLabel.text = "0"
             }
-           else if Values.checkValue(value: topElement) == Values.number {
-               
+            else if Values.checkValue(value: topElement) == Values.number {
+                
                 let number = Int(nameStack.pop() ?? "")
-             if let number = number {
+                if let number = number {
                     let integerNumberSignChange = 0 - number
                     let stringNumberSignChange = String(integerNumberSignChange)
                     nameStack.push(stringNumberSignChange)
                     calculationLabel.text = stringNumberSignChange
                 }
             }
-        }
+        } else if storeCheckValue == Values.decimalPoint {
+            var appendNumber = cell?.valueLabel.text ?? ""
+            
+            if nameStack.peek().contains(".") {
+                return
+            } else {
+                let poppedNumber =  nameStack.pop()
+                appendNumber = (poppedNumber ?? "") + appendNumber
+                nameStack.push(appendNumber)
+                calculationLabel.text = appendNumber
+                }
+    }
     }
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
