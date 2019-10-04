@@ -93,68 +93,77 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 }
             }
         } else if storeCheckValue == Values.equalTo {
-            calculationLabel.text = calculateResult(stackValues: &nameStack)
-        }
-        else if storeCheckValue == Values.plusMinus {
-            if nameStack.count() == 0 {
-                calculationLabel.text = "0"
+                calculationLabel.text = calculateResult(stackValues: &nameStack)
             }
-            else if Values.checkValue(value: topElement) == Values.number {
-                
-                let number = Int(nameStack.pop() ?? "")
-                if let number = number {
-                    let integerNumberSignChange = 0 - number
-                    let stringNumberSignChange = String(integerNumberSignChange)
-                    nameStack.push(stringNumberSignChange)
-                    calculationLabel.text = stringNumberSignChange
+            else if storeCheckValue == Values.plusMinus {
+                if nameStack.count() == 0 {
+                    calculationLabel.text = "0"
+                }
+                else if Values.checkValue(value: topElement) == Values.number {
+                    
+                    let number = Int(nameStack.pop() ?? "")
+                    if let number = number {
+                        let integerNumberSignChange = 0 - number
+                        let stringNumberSignChange = String(integerNumberSignChange)
+                        nameStack.push(stringNumberSignChange)
+                        calculationLabel.text = stringNumberSignChange
+                    }
+                }
+            } else if storeCheckValue == Values.decimalPoint {
+                var appendNumber = cell?.valueLabel.text ?? ""
+                if nameStack.count() == 0 {
+                    nameStack.push(cell?.valueLabel.text ?? "")
+                    calculationLabel.text = cell?.valueLabel.text
+                    //return
+                }
+                else if nameStack.peek().contains(".") {
+                    return
+                } else if Values.checkValue(value: topElement) == Values.operators {
+                    nameStack.push(appendNumber)
+                    calculationLabel.text = appendNumber
+                }
+                else {
+                    let poppedNumber =  nameStack.pop()
+                    appendNumber = (poppedNumber ?? "") + appendNumber
+                    nameStack.push(appendNumber)
+                    calculationLabel.text = appendNumber
+                }
+        } else if storeCheckValue == Values.percentage {
+            if Values.checkValue(value: topElement) == Values.number {
+                let poppedNumber = Double(nameStack.pop() ?? "")
+                if var poppedNumber = poppedNumber {
+                    poppedNumber = poppedNumber / 100
+                    nameStack.push(String(poppedNumber))
+                    calculationLabel.text = String(poppedNumber)
                 }
             }
-        } else if storeCheckValue == Values.decimalPoint {
-            var appendNumber = cell?.valueLabel.text ?? ""
-            if nameStack.count() == 0 {
-                nameStack.push(cell?.valueLabel.text ?? "")
-                calculationLabel.text = cell?.valueLabel.text
-                //return
-            }
-            else if nameStack.peek().contains(".") {
-                return
-            } else if Values.checkValue(value: topElement) == Values.operators {
-                nameStack.push(appendNumber)
-                calculationLabel.text = appendNumber
-            }
-            else {
-                let poppedNumber =  nameStack.pop()
-                appendNumber = (poppedNumber ?? "") + appendNumber
-                nameStack.push(appendNumber)
-                calculationLabel.text = appendNumber
-            }
         }
     }
-    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
-        cell?.valueLabel.backgroundColor = UIColor.black
-    }
-    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
-        let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
-        if storeCheckValue == Values.operators {
-            cell?.valueLabel.backgroundColor = UIColor.getyellowOrange()
-        } else if storeCheckValue == Values.equalTo {
-            cell?.valueLabel.backgroundColor = UIColor.getyellowOrange()
-        } else {
-            cell?.valueLabel.backgroundColor = UIColor.getTinColor()
+        func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+            let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
+            cell?.valueLabel.backgroundColor = UIColor.black
         }
-    }
-}
-
-// MARK: UICollectionViewDelegateFlowLayout
-extension OnBoardingVC: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 1
+        func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+            let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
+            let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
+            if storeCheckValue == Values.operators {
+                cell?.valueLabel.backgroundColor = UIColor.getyellowOrange()
+            } else if storeCheckValue == Values.equalTo {
+                cell?.valueLabel.backgroundColor = UIColor.getyellowOrange()
+            } else {
+                cell?.valueLabel.backgroundColor = UIColor.getTinColor()
+            }
+        }
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width:  view.frame.width/5, height:  view.frame.width/5)
-    }
+    // MARK: UICollectionViewDelegateFlowLayout
+    extension OnBoardingVC: UICollectionViewDelegateFlowLayout {
+        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+            return 1
+        }
+        
+        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+            return CGSize(width:  view.frame.width/5, height:  view.frame.width/5)
+        }
 }
 

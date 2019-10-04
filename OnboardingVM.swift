@@ -103,6 +103,7 @@ enum Values: Int {
     case equalTo
     case plusMinus
     case decimalPoint
+    case percentage
     static func checkValue(value: String) -> Values {
         switch value {
         case "C":
@@ -117,6 +118,8 @@ enum Values: Int {
             return plusMinus
         case ".":
             return decimalPoint
+        case "%":
+            return percentage
         default:
             print("invalid operator")
         }
