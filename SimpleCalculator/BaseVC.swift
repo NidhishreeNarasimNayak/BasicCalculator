@@ -21,18 +21,10 @@ extension BaseVC {
         for _ in 0..<stackValues.count() {
             stringStored = (stackValues.pop() ?? "") + stringStored
         }
-        let expression: NSExpression = NSExpression(format: stringStored)
-        guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return "nil"  }
-        convertedDoubleToString = String(result)
-        stackValues.push(convertedDoubleToString)
+          let expression: NSExpression = NSExpression(format: stringStored)
+            guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return "nil"  }
+            convertedDoubleToString = String(result)
+            stackValues.push(convertedDoubleToString)
         return convertedDoubleToString
-    }
-    
-//    func appendNumber(stackValues: inout Stack) {
-//        if let  storeNumber  = cell?.valueLabel.text ?? "" {
-//            var popedNumber = stackValues.pop()
-//            var appendNumber = (popedNumber ?? "") + storeNumber
-//            stackValues.push(appendNumber)
-//        }
-//}
+       }
 }
