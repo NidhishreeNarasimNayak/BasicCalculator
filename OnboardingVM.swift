@@ -33,7 +33,7 @@ enum OperatorValue: String, CaseIterable {
     var operatorValue: String {
         switch self {
         case .cancelOperator:
-            return "C"
+            return "AC"
         case .plusMinusOperator:
             return "+/-"
         case .percentageOperator:
@@ -91,6 +91,10 @@ struct Stack {
     mutating func popAllElements() {
         items.removeAll()
     }
+    mutating func bottomElement() -> String {
+        let bottomItem = items[items.count - 1]
+        return bottomItem
+    }
     func  count() -> Int {
         return items.count
     }
@@ -104,6 +108,7 @@ enum Values: Int {
     case plusMinus
     case decimalPoint
     case percentage
+    case allClear
     static func checkValue(value: String) -> Values {
         switch value {
         case "C":
@@ -120,9 +125,76 @@ enum Values: Int {
             return decimalPoint
         case "%":
             return percentage
+        case "AC":
+            return allClear
         default:
             print("invalid operator")
         }
         return number
+    }
+}
+
+enum IndexValues: Int {
+    case cancelOperator
+    case plusMinusOperator
+    case percentageOperator
+    case divideOperator
+    case numberSeven
+    case numberEight
+    case numberNine
+    case multiplyOperator
+    case numberFour
+    case numberFive
+    case numberSix
+    case subtractOperator
+    case numberOne
+    case numberTwo
+    case numberThree
+    case addOperator
+    case numberZero
+    case numberDecimal
+    case equalToOperator
+    
+    var operatorValue: Int {
+        switch  self {
+        case .cancelOperator:
+            return 0
+        case .plusMinusOperator:
+            return 1
+        case .percentageOperator:
+            return 2
+        case .divideOperator:
+            return 3
+        case .numberSeven:
+            return 4
+        case .numberEight:
+            return 5
+        case .numberNine:
+            return 6
+        case .multiplyOperator:
+            return 7
+        case .numberFour:
+            return 8
+        case .numberFive:
+            return 9
+        case .numberSix:
+            return 10
+        case .subtractOperator:
+            return 11
+        case .numberOne:
+            return 12
+        case .numberTwo:
+            return 13
+        case .numberThree:
+            return 14
+        case .addOperator:
+            return 15
+        case .numberZero:
+            return 16
+        case .numberDecimal:
+            return 17
+        case .equalToOperator:
+            return 18
+        }
     }
 }

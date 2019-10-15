@@ -30,28 +30,35 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let onBoardingCell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: OnBoardingCell.self), for: indexPath) as? OnBoardingCell else { return OnBoardingCell() }
         onBoardingCell.layer.cornerRadius = onBoardingCell.frame.width/2
-        //onBoardingCell.valueLabel.layer.cornerRadius = view.frame.width/2
+        
         onBoardingCell.valueLabel.text = OperatorValue.allCases[indexPath.row].operatorValue
         onBoardingCell.valueLabel.tag = indexPath.row
-        if (onBoardingCell.valueLabel.tag == 3) || (onBoardingCell.valueLabel.tag == 7) || (onBoardingCell.valueLabel.tag == 11) || (onBoardingCell.valueLabel.tag == 15) || (onBoardingCell.valueLabel.tag == 18) {
+        if (onBoardingCell.valueLabel.tag == IndexValues.divideOperator.rawValue) || (onBoardingCell.valueLabel.tag == IndexValues.multiplyOperator.rawValue) || (onBoardingCell.valueLabel.tag == IndexValues.subtractOperator.rawValue) || (onBoardingCell.valueLabel.tag == IndexValues.addOperator.rawValue) || (onBoardingCell.valueLabel.tag == IndexValues.equalToOperator.rawValue) {
+            onBoardingCell.backgroundColor = UIColor.getyellowOrange()
             onBoardingCell.valueLabel.backgroundColor = UIColor.getyellowOrange()
-        } else if (onBoardingCell.valueLabel.tag == 0) || (onBoardingCell.valueLabel.tag == 1) || (onBoardingCell.valueLabel.tag == 2)  {
+        } else if (onBoardingCell.valueLabel.tag == IndexValues.cancelOperator.rawValue) || (onBoardingCell.valueLabel.tag == IndexValues.plusMinusOperator.rawValue) || (onBoardingCell.valueLabel.tag == IndexValues.percentageOperator.rawValue)  {
             onBoardingCell.valueLabel.backgroundColor = UIColor.getTinColor()
             onBoardingCell.valueLabel.textColor = UIColor.black
+            onBoardingCell.backgroundColor = UIColor.getTinColor()
         }
-        if indexPath.row == 16 {
+        if indexPath.row == IndexValues.numberZero.rawValue {
             onBoardingCell.layer.cornerRadius = onBoardingCell.frame.height / 2
-            onBoardingCell.valueLabel.textAlignment = .natural
+            onBoardingCell.valueLabel.textAlignment = .left
         }
+        calculationLabel.text = "0"
         return onBoardingCell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
-        
+        let firstCell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? OnBoardingCell
         let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
+        let storeValue = cell?.valueLabel.text ?? ""
         let topElement = nameStack.peek()
-        
+        if storeValue == "AC" {
+            calculationLabel.text = "0"
+            return
+        }
         if storeCheckValue == Values.cancel {
             nameStack.popAllElements()
             calculationLabel.text = "0"
@@ -60,8 +67,10 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             if nameStack.count() == 0 {
                 nameStack.push(cell?.valueLabel.text ?? "")
                 calculationLabel.text = cell?.valueLabel.text
+                firstCell?.valueLabel.text = "C"
                 return
             }
+            
             if Values.checkValue(value: topElement) == Values.number {
                 //when user enters a two digit number
                 if let storeNumber  = cell?.valueLabel.text {
@@ -81,23 +90,33 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 //when the number starts with a decimal point
             } else if Values.checkValue(value: topElement) == Values.decimalPoint {
                 if let storeNumber = cell?.valueLabel.text {
-                    // pushToStack(storeNumber, nameStack)
                     let poppedNumber = nameStack.pop()
                     let appendNumber = (poppedNumber ?? "") + storeNumber
                     nameStack.push(appendNumber)
                     calculationLabel.text = appendNumber
                 }
-            } //checking for operators
+            }
+            //checking for operators
         }  else if storeCheckValue == Values.operators {
-            if nameStack.count() == 1 {
-                //                    if Values.checkValue(value: topElement) == Values.decimalPoint || Values.number {
-                if nameStack.peek().contains(".") {
-                    let poppedNumber = nameStack.pop()
-                    nameStack.push(poppedNumber ?? "")
+            // the user presses on an operator first
+            if nameStack.count() == 0 {
+                calculationLabel.text = "0"
+                
+            } else if nameStack.count() == 1 {
+                //                if nameStack.peek().contains(".") {
+                //                    let poppedNumber = nameStack.pop()
+                //                    nameStack.push(poppedNumber ?? "")
+                let poppedElement = nameStack.pop() ?? ""
+                if !(poppedElement.contains(".")){
+                    let poppedNumber = poppedElement + ".0"
+                    nameStack.push(poppedNumber)
+                } else {
+                    nameStack.push(poppedElement)
                 }
                 nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
                 //calculate result
-            } else if Values.checkValue(value: topElement) == Values.number {
+            }
+            else if Values.checkValue(value: topElement) == Values.number {
                 calculationLabel.text =  calculateResult(stackValues: &nameStack)
                 nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
                 // if the user enters second operator by mistake
@@ -111,6 +130,10 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             if nameStack.count() == 0 {
                 calculationLabel.text = "0"
                 return
+            } else if Values.checkValue(value: topElement) == Values.operators {
+                let storeBottomElement = nameStack.bottomElement()
+                nameStack.push(storeBottomElement)
+                calculationLabel.text = calculateResult(stackValues: &nameStack)
             }
             calculationLabel.text = calculateResult(stackValues: &nameStack)
         }
@@ -129,7 +152,6 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             }
         } else if storeCheckValue == Values.decimalPoint {
             var appendNumber = cell?.valueLabel.text ?? ""
-            //let poppedNumber =  nameStack.pop()
             //stack is empty , want to start with point
             if nameStack.count() == 0 {
                 nameStack.push(cell?.valueLabel.text ?? "")
@@ -167,6 +189,12 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 }
             }
         }
+        
+        if nameStack.count() > 0 {
+            firstCell?.valueLabel.text = "C"
+        } else {
+            firstCell?.valueLabel.text = "AC"
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
@@ -174,40 +202,62 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
         let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
         if storeCheckValue == Values.number {
             cell?.valueLabel.backgroundColor = UIColor.lightGray
+            cell?.backgroundColor = UIColor.lightGray
         } else if storeCheckValue == Values.operators {
             cell?.valueLabel.backgroundColor = UIColor.getLightOrange()
+            cell?.backgroundColor = UIColor.getLightOrange()
+            cell?.valueLabel.textColor = UIColor.getyellowOrange()
         } else if storeCheckValue == Values.decimalPoint {
             cell?.valueLabel.backgroundColor =  UIColor.lightGray
+            cell?.backgroundColor = UIColor.lightGray
         } else if storeCheckValue == Values.cancel {
             cell?.valueLabel.backgroundColor = UIColor.white
+            cell?.backgroundColor = UIColor.white
         } else if storeCheckValue == Values.plusMinus {
             cell?.valueLabel.backgroundColor = UIColor.white
+            cell?.backgroundColor = UIColor.white
         } else if storeCheckValue == Values.percentage {
             cell?.valueLabel.backgroundColor = UIColor.white
+            cell?.backgroundColor = UIColor.white
         } else if storeCheckValue == Values.equalTo {
             cell?.valueLabel.backgroundColor = UIColor.getLightOrange()
+            cell?.backgroundColor = UIColor.getLightOrange()
+            cell?.valueLabel.textColor = UIColor.white
+        } else if storeCheckValue == Values.allClear {
+            cell?.valueLabel.backgroundColor = UIColor.white
+            cell?.backgroundColor = UIColor.white
         }
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? OnBoardingCell
+        //let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? OnBoardingCell
+        
         let storeCheckValue = Values.checkValue(value: cell?.valueLabel.text ?? "")
         if storeCheckValue == Values.operators {
             cell?.valueLabel.backgroundColor = UIColor.getyellowOrange()
+            cell?.backgroundColor = UIColor.getyellowOrange()
+            cell?.valueLabel.textColor = UIColor.white
         } else if storeCheckValue == Values.equalTo {
             cell?.valueLabel.backgroundColor = UIColor.getyellowOrange()
+            cell?.backgroundColor = UIColor.getyellowOrange()
+            cell?.valueLabel.textColor = UIColor.white
         } else if storeCheckValue == Values.cancel {
             cell?.valueLabel.backgroundColor = UIColor.getTinColor()
+            cell?.backgroundColor = UIColor.getTinColor()
         } else if storeCheckValue == Values.plusMinus {
             cell?.valueLabel.backgroundColor = UIColor.getTinColor()
+            cell?.backgroundColor = UIColor.getTinColor()
         } else if storeCheckValue == Values.percentage {
             cell?.valueLabel.backgroundColor = UIColor.getTinColor()
-        } else if storeCheckValue == Values.equalTo {
-            cell?.valueLabel.backgroundColor = UIColor.getyellowOrange()
+            cell?.backgroundColor = UIColor.getTinColor()
+        } else if storeCheckValue == Values.allClear {
+            cell?.valueLabel.backgroundColor = UIColor.getTinColor()
+            cell?.backgroundColor = UIColor.getTinColor()
         }
         else {
-            cell?.valueLabel.backgroundColor = UIColor.getTungstunColor()
+            cell?.valueLabel.backgroundColor = UIColor.getTungstenColor()
+            cell?.backgroundColor = UIColor.getTungstenColor()
         }
     }
 }
@@ -220,8 +270,8 @@ extension OnBoardingVC: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if indexPath.row == 16 {
-           return CGSize(width: (onBoardingCollectionView.frame.width - 20)/2, height: (onBoardingCollectionView.frame.width - 90)/5 )
+        if indexPath.row == IndexValues.numberZero.rawValue {
+            return CGSize(width: (onBoardingCollectionView.frame.width - 20)/2, height: (onBoardingCollectionView.frame.width - 90)/4 )
         } else {
             return CGSize(width: (onBoardingCollectionView.frame.width - 90)/4, height: (onBoardingCollectionView.frame.width - 90)/4)
         }

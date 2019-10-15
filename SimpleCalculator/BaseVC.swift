@@ -11,7 +11,7 @@ import UIKit
 
 
 class BaseVC: UIViewController {
-
+    
 }
 /// extension which calculates the result of the expression
 extension BaseVC {
@@ -21,10 +21,24 @@ extension BaseVC {
         for _ in 0..<stackValues.count() {
             stringStored = (stackValues.pop() ?? "") + stringStored
         }
-          let expression: NSExpression = NSExpression(format: stringStored)
-            guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return "nil"  }
-            convertedDoubleToString = String(result)
-            stackValues.push(convertedDoubleToString)
+        let expression: NSExpression = NSExpression(format: stringStored)
+        guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return "nil"  }
+        convertedDoubleToString = String(result)
+        if convertedDoubleToString.contains(".") {
+            guard let convertedStringToDouble = Double(convertedDoubleToString) else { return "nil" }
+            if convertedStringToDouble.truncatingRemainder(dividingBy: 1) == 0 {
+                let convertReultToInt = Int(convertedStringToDouble)
+                let result = String(convertReultToInt)
+                stackValues.push(result)
+                return result
+                
+            } else {
+                let convertResultToDouble = Double(convertedStringToDouble)
+                let result = String(convertResultToDouble)
+                stackValues.push(result)
+                return result
+            }
+        }
         return convertedDoubleToString
-       }
+    }
 }
