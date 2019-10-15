@@ -15,6 +15,7 @@ class BaseVC: UIViewController {
 }
 /// extension which calculates the result of the expression
 extension BaseVC {
+    ///function which calculates the result of two operands
     func calculateResult(stackValues: inout Stack) -> String {
         var stringStored: String = ""
         var convertedDoubleToString: String = ""
@@ -23,22 +24,23 @@ extension BaseVC {
         }
         let expression: NSExpression = NSExpression(format: stringStored)
         guard let result = expression.expressionValue(with: nil, context: nil) as? Double else { return "nil"  }
-        convertedDoubleToString = String(result)
-        if convertedDoubleToString.contains(".") {
-            guard let convertedStringToDouble = Double(convertedDoubleToString) else { return "nil" }
-            if convertedStringToDouble.truncatingRemainder(dividingBy: 1) == 0 {
-                let convertReultToInt = Int(convertedStringToDouble)
-                let result = String(convertReultToInt)
-                stackValues.push(result)
-                return result
-                
+       // convertedDoubleToString = String(result)
+        ///to get a result in integer if the result ends with ".0"
+       // if convertedDoubleToString.contains(".") {
+          //  guard let convertedStringToDouble = Double(convertedDoubleToString) else { return "nil" }
+            if result.truncatingRemainder(dividingBy: 1) == 0 {
+                let convertResultToInt = Int(result)
+                let convertResultToString = String(convertResultToInt)
+                stackValues.push(convertResultToString)
+                return convertResultToString
+                /// to get result in Double if the  result doesnt end with ".0"
             } else {
-                let convertResultToDouble = Double(convertedStringToDouble)
-                let result = String(convertResultToDouble)
-                stackValues.push(result)
-                return result
+               // let convertResultToDouble = Double(convertedStringToDouble)
+                let convertResultToString = String(result)
+                stackValues.push(convertResultToString)
+                return convertResultToString
             }
-        }
-        return convertedDoubleToString
+        //}
+      //  return convertedDoubleToString
     }
 }

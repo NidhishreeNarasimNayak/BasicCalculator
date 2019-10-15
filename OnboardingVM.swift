@@ -75,13 +75,14 @@ enum OperatorValue: String, CaseIterable {
 }
 
 struct Stack {
-    private var items: [String] = []  // to hold stack values
+    /// to hold stack values
+    private var items: [String] = []
     
-    //peek at the top most element of stack, just return the top most item
+    ///peek at the top most element of stack, just return the top most item
     func peek() -> String {
         guard let topElement = items.first else { return "The stack is empty"}
         return topElement
-    }
+    } /// to pop the first element from stack
     mutating func pop() -> String? {
         return items.removeFirst()
     }
@@ -90,16 +91,16 @@ struct Stack {
     }
     mutating func popAllElements() {
         items.removeAll()
-    }
+    } /// to pop the bottom element from a stack
     mutating func bottomElement() -> String {
         let bottomItem = items[items.count - 1]
         return bottomItem
-    }
+    } /// number of elements present in the stack
     func  count() -> Int {
         return items.count
     }
 }
-
+///enum to check what kind of values are stored in the stack
 enum Values: Int {
     case number
     case operators
@@ -133,7 +134,7 @@ enum Values: Int {
         return number
     }
 }
-
+///enum to get the index values of each operands and operators
 enum IndexValues: Int {
     case cancelOperator
     case plusMinusOperator

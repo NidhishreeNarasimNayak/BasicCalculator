@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+// MARK: - UIColor
 extension UIColor {
     class func getyellowOrange() -> UIColor {
         return UIColor(displayP3Red: 240/256, green: 142/256, blue: 39/256, alpha: 1.0)
