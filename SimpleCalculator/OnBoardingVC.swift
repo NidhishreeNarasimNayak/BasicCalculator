@@ -96,30 +96,27 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                     calculationLabel.text = appendNumber
                 }
             }
-            //checking for operators
+            /// checking for operators
         }  else if storeCheckValue == Values.operators {
-            // the user presses on an operator first
+            /// the user presses on an operator first display 0 on label
             if nameStack.count() == 0 {
                 calculationLabel.text = "0"
-                
+                /// if the user enters an integer convert it to Double by adding ".0"
             } else if nameStack.count() == 1 {
-                //                if nameStack.peek().contains(".") {
-                //                    let poppedNumber = nameStack.pop()
-                //                    nameStack.push(poppedNumber ?? "")
                 let poppedElement = nameStack.pop() ?? ""
                 if !(poppedElement.contains(".")){
                     let poppedNumber = poppedElement + ".0"
                     nameStack.push(poppedNumber)
+                    /// since we are popping the number first this is to check for decimal number entering first then just push it back to stack
                 } else {
                     nameStack.push(poppedElement)
-                }
+                }  /// push the operator to stack
                 nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
-                //calculate result
-            }
+            } /// calculate result if an operator is pressed for the second time
             else if Values.checkValue(value: topElement) == Values.number {
                 calculationLabel.text =  calculateResult(stackValues: &nameStack)
                 nameStack.push(OperatorValue.allCases[indexPath.row].operatorValue)
-                // if the user enters second operator by mistake
+                // if the user enters second operator by mistake take the last operator
             } else if Values.checkValue(value: topElement) == Values.operators {
                 if let storeOperator = cell?.valueLabel.text {
                     nameStack.pop()
@@ -127,9 +124,10 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 }
             }
         } else if storeCheckValue == Values.equalTo {
+            //equal to is pressed when stack is empty 0 is shown on the label.
             if nameStack.count() == 0 {
                 calculationLabel.text = "0"
-                return
+                return  /// to check expressions like 9+= should be 9+9= thats why we are accesing the              bottom element
             } else if Values.checkValue(value: topElement) == Values.operators {
                 let storeBottomElement = nameStack.bottomElement()
                 nameStack.push(storeBottomElement)
@@ -138,17 +136,17 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             calculationLabel.text = calculateResult(stackValues: &nameStack)
         }
         else if storeCheckValue == Values.plusMinus {
+            //plus Minus is pressed when stack is empty 0 is shown on the label.
             if nameStack.count() == 0 {
                 calculationLabel.text = "0"
-            }
+            } // when plusminus operator is pressed 0 - the number
             else if Values.checkValue(value: topElement) == Values.number {
                 let number = Int(nameStack.pop() ?? "")
-                if let number = number {
-                    let integerNumberSignChange = 0 - number
-                    let stringNumberSignChange = String(integerNumberSignChange)
-                    nameStack.push(stringNumberSignChange)
-                    calculationLabel.text = stringNumberSignChange
-                }
+                guard let numberStored = number else { return }
+                let integerNumberSignChange = 0 - numberStored
+                let stringNumberSignChange = String(integerNumberSignChange)
+                nameStack.push(stringNumberSignChange)
+                calculationLabel.text = stringNumberSignChange
             }
         } else if storeCheckValue == Values.decimalPoint {
             var appendNumber = cell?.valueLabel.text ?? ""
@@ -156,10 +154,9 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
             if nameStack.count() == 0 {
                 nameStack.push(cell?.valueLabel.text ?? "")
                 calculationLabel.text = cell?.valueLabel.text
-                //return
             } // checking for how many points are there in an element
             else if nameStack.peek().contains(".") {
-                return //appending a decimal point to the second number
+                return //if the second operand starts with a "." pushing it to the stack
             } else if Values.checkValue(value: topElement) == Values.operators {
                 nameStack.push(appendNumber)
                 calculationLabel.text = appendNumber
@@ -178,18 +175,19 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
                 calculationLabel.text = appendNumber
             }
         } else if storeCheckValue == Values.percentage {
+            //percentage is pressed when stack is empty 0 is shown on the label.
             if nameStack.count() == 0 {
                 calculationLabel.text = "0"
+                ///when percentage is pressed after entering a number
             } else if Values.checkValue(value: topElement) == Values.number {
                 let poppedNumber = Double(nameStack.pop() ?? "")
-                if var poppedNumber = poppedNumber {
-                    poppedNumber = poppedNumber / 100
-                    nameStack.push(String(poppedNumber))
-                    calculationLabel.text = String(poppedNumber)
-                }
+                guard var poppedNumberStored = poppedNumber else { return }
+                poppedNumberStored = poppedNumberStored / 100
+                nameStack.push(String(poppedNumberStored))
+                calculationLabel.text = String(poppedNumberStored)
             }
         }
-        
+        /// if the stack has elements then the label text is C else AC
         if nameStack.count() > 0 {
             firstCell?.valueLabel.text = "C"
         } else {
@@ -264,18 +262,13 @@ extension OnBoardingVC: UICollectionViewDataSource, UICollectionViewDelegate {
 
 // MARK: UICollectionViewDelegateFlowLayout
 extension OnBoardingVC: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 20
-    }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if indexPath.row == IndexValues.numberZero.rawValue {
             return CGSize(width: (onBoardingCollectionView.frame.width - 20)/2, height: (onBoardingCollectionView.frame.width - 90)/4 )
         } else {
             return CGSize(width: (onBoardingCollectionView.frame.width - 90)/4, height: (onBoardingCollectionView.frame.width - 90)/4)
         }
-        
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
